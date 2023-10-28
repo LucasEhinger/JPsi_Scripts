@@ -184,6 +184,15 @@ void filter_cutVary(string inFileName, string outFileName, string treeName = "e_
   double EMissCut_min=0.5;
   double EMissCut_max=1.5;
 
+  //Apply the loosest set of cuts possible, to make all further calculations easier.
+  //All additional varied cuts will start from rdf_trimmed
+
+  auto rdf_trimmed=rdf_track_shower.Filter("(em_eprebcal_sinTheta > " + to_string(preBCut_min) + ") || (em_efcal > 0 )")
+          .Filter("(ep_eprebcal_sinTheta > " +to_string(preBCut_min) + ") || (ep_efcal > 0 )")
+          .Filter("(passEoverP(em_p4_kin.P(),em_efcal,em_ebcal,em_isFCAL," + to_string(sigma_minus_min) + "," + to_string(sigma_plus_max) + "))")
+          .Filter("(passEoverP(ep_p4_kin.P(),ep_efcal,ep_ebcal,ep_isFCAL," + to_string(sigma_minus_min) + "," + to_string(sigma_plus_max) + "))")
+          .Filter("(fabs(E_miss_stat_p) < " + to_string(EMissCut_max) + ")");
+
   TFile * histFile = new TFile(outFileName.c_str(),"RECREATE");
   histFile->cd();
 
@@ -193,7 +202,7 @@ void filter_cutVary(string inFileName, string outFileName, string treeName = "e_
     string sigma_plus = to_string(rand3->Uniform(sigma_plus_min,sigma_plus_max));
     string EMissCut = to_string(rand3->Uniform(EMissCut_min,EMissCut_max));
 
-    auto rdf_preShower=rdf_track_shower.Filter("(em_eprebcal_sinTheta > " +preBCut + ") || (em_efcal > 0 )")
+    auto rdf_preShower=rdf_trimmed.Filter("(em_eprebcal_sinTheta > " +preBCut + ") || (em_efcal > 0 )")
             .Filter("(ep_eprebcal_sinTheta > " +preBCut + ") || (ep_efcal > 0 )");
 
     auto rdf_PoverE=rdf_preShower.Filter("(passEoverP(em_p4_kin.P(),em_efcal,em_ebcal,em_isFCAL," + sigma_minus + "," + sigma_plus + "))")
