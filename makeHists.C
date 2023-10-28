@@ -266,12 +266,9 @@ void makeKinPlots(RNode rdf_in,TFile* histFile, TDirectory* currentDirectory){
   h_mstand.SetName("mass_stand");
   h_mstand.Write();
 
-  TH1D h_mpair = *rdf_in.Histo1D(mass_model,"jpsi_m_pair","accidweight");
-  h_mpair.SetName("mass_pair");
-  h_mpair.Write();
 
-  TH1D h_mpair_fine = *rdf_in.Histo1D({"mass_pair_fine","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
-  h_mpair_fine.Write();
+  TH1D h_mpair = *rdf_in.Histo1D({"mass_pair","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair.Write();
 
   TH1D h_mpair_nn = *rdf_in.Filter("(accidweight>0)").Histo1D(mass_model,"jpsi_m_pair","accidweight");
   h_mpair_nn.SetName("mass_pair_no_neg");
