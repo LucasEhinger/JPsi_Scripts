@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
 Targets=("D" "He" "C")
-#Targets=("D")
+#Targets=("D" "He")
 TreeNames=("gd_epemprotinc__B4_F4_T1_S2" "ghe_epemprotinc__B4_F4_T1_S2" "gc12_epemprotinc__B4_F4_T1_S2")
-#TreeNames=("gd_epemprotinc__B4_F4_T1_S2")
 TargetsSIM=("2H" "4He" "12C")
 #mixedStrings=("." "_mixed.")
 mixedStrings=("_mixed.")
@@ -26,18 +25,18 @@ for j in ${!FOLDERS[@]}; do
   mkdir -p ${outFolder}
   for i in ${!Targets[@]}; do
     INPUTFILE=${inFolder}/data_tree_${Targets[$i]}.root
-    TREE=${outFolder}/data_hist_${Targets[$i]}.root
-    root -q -b 'makeHists.C("'${INPUTFILE}'","'${TREE}'","'${TreeNames[$i]}'")'&
+    TREE=${outFolder}/data_hist_zComp_${Targets[$i]}.root
+    root -q -b 'makeHists_zVertexComp.C("'${INPUTFILE}'","'${TREE}'","'${TreeNames[$i]}'")'&
   done
 
   for isMixed in ${mixedStrings[@]}; do
     for MFSRC in ${MFSRCStrings[@]}; do
       for i in ${!TargetsSIM[@]}; do
         INPUTFILE=${inFolder}/tree_DSelector_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}root
-        TREE=${outFolder}/hist_DSelector_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}root
+        TREE=${outFolder}/hist_zComp_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}root
         if [[ ${TargetsSIM[$i]} != "2H" || ${MFSRC} != "SRC" ]]
         then
-          root -q -b 'makeHists.C("'${INPUTFILE}'","'${TREE}'","'${TreeNames[$i]}'")'&
+          root -q -b 'makeHists_zVertexComp.C("'${INPUTFILE}'","'${TREE}'","'${TreeNames[$i]}'")'&
         fi
       done
     done

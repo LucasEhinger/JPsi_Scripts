@@ -305,7 +305,7 @@ void makeAllPlots(RNode rdf_in,TFile* histFile, TDirectory* currentDirectory){
   makeParticleKinPlots(rdf_in, histFile, ep_plots,"ep");
 }
 
-void makeHists(string inFileName, string outFileName, string treeName = "e_e_p_X")
+void makeHists_zVertexComp(string inFileName, string outFileName, string treeName = "e_e_p_X")
 {
 
   using namespace ROOT;
@@ -323,33 +323,29 @@ void makeHists(string inFileName, string outFileName, string treeName = "e_e_p_X
 //  auto rdf_SB=rdf_final.Filter("(((jpsi_m_pair>2.9)&&(jpsi_m_pair<3))||((jpsi_m_pair>3.2)&&(jpsi_m_pair<3.3)))");
 
 
-  auto rdf_subThresh=rdf_final.Filter("((E_gamma>7) && (E_gamma<8.2))");
-  auto rdf_aboveThresh=rdf_final.Filter("(E_gamma>8.2)");
-  auto rdf_aboveThresh_lower=rdf_aboveThresh.Filter("(E_gamma<9.5)");
-  auto rdf_aboveThresh_upper=rdf_aboveThresh.Filter("(E_gamma>9.5)");
+  auto rdf_all_zVertex_50_60=rdf_final.Filter("(em_x4_kin.Z()<60)");
+  auto rdf_all_zVertex_60_70=rdf_final.Filter("(em_x4_kin.Z()>60)&&(em_x4_kin.Z()<70)");
+  auto rdf_all_zVertex_70_80=rdf_final.Filter("(em_x4_kin.Z()>70)");
 
-  auto rdf_all_pt03_lower=rdf_final.Filter("tot_perp<0.3");
-  auto rdf_all_pt03_upper=rdf_final.Filter("tot_perp>0.3");
-  auto rdf_subThresh_pt03_lower=rdf_subThresh.Filter("tot_perp<0.3");
-  auto rdf_subThresh_pt03_upper=rdf_subThresh.Filter("tot_perp>0.3");
-  auto rdf_aboveThresh_pt03_lower=rdf_aboveThresh.Filter("tot_perp<0.3");
-  auto rdf_aboveThresh_pt03_upper=rdf_aboveThresh.Filter("tot_perp>0.3");
-  auto rdf_all_alpha1p2_lower=rdf_final.Filter("alpha_miss<1.2");
-  auto rdf_all_alpha1p2_upper=rdf_final.Filter("alpha_miss>1.2");
-
-  auto rdf_pT_alphaCut=rdf_final.Filter("(tot_perp < 0.8-0.8/1.4*alpha_miss)");
+  auto rdf_all_zVertex_foil_1=rdf_final.Filter("(em_x4_kin.Z()<53.75)");
+  auto rdf_all_zVertex_foil_2=rdf_final.Filter("(em_x4_kin.Z()>53.75)&&(em_x4_kin.Z()<57.5)");
+  auto rdf_all_zVertex_foil_3=rdf_final.Filter("(em_x4_kin.Z()>57.5)&&(em_x4_kin.Z()<61.25)");
+  auto rdf_all_zVertex_foil_4=rdf_final.Filter("(em_x4_kin.Z()>61.25)&&(em_x4_kin.Z()<65)");
+  auto rdf_all_zVertex_foil_5=rdf_final.Filter("(em_x4_kin.Z()>65)&&(em_x4_kin.Z()<68.75)");
+  auto rdf_all_zVertex_foil_6=rdf_final.Filter("(em_x4_kin.Z()>68.75)&&(em_x4_kin.Z()<72.5)");
+  auto rdf_all_zVertex_foil_7=rdf_final.Filter("(em_x4_kin.Z()>72.5)&&(em_x4_kin.Z()<76.25)");
+  auto rdf_all_zVertex_foil_8=rdf_final.Filter("(em_x4_kin.Z()>76.25)");
 
 
+  vector<string> name_vec = {"All", "All_z_vertex_1","All_z_vertex_2","All_z_vertex_3",
+                             "All_z_vertex_foil_1","All_z_vertex_foil_2","All_z_vertex_foil_3",
+                             "All_z_vertex_foil_4","All_z_vertex_foil_5","All_z_vertex_foil_6",
+                             "All_z_vertex_foil_7","All_z_vertex_foil_8"};
 
-  vector<string> name_vec = {"All", "SubThresh", "AboveThresh", "AboveThresh_lower", "AboveThresh_upper",
-                             "All_pt03_lower","All_pt03_upper","SubThresh_pt03_lower","SubThresh_pt03_upper",
-                             "AboveThresh_pt03_lower","AboveThresh_pt03_upper",
-                             "All_alpha1p2_lower","All_alpha1p2_upper","All_pt_alpha"};
-
-  vector<RNode> rdf_vec = {rdf_final, rdf_subThresh, rdf_aboveThresh, rdf_aboveThresh_lower, rdf_aboveThresh_upper,
-                           rdf_all_pt03_lower,rdf_all_pt03_upper,rdf_subThresh_pt03_lower,rdf_subThresh_pt03_upper,
-                           rdf_aboveThresh_pt03_lower,rdf_aboveThresh_pt03_upper,
-                           rdf_all_alpha1p2_lower,rdf_all_alpha1p2_upper,rdf_pT_alphaCut};
+  vector<RNode> rdf_vec = {rdf_final, rdf_all_zVertex_50_60,rdf_all_zVertex_60_70,rdf_all_zVertex_70_80,
+                           rdf_all_zVertex_foil_1,rdf_all_zVertex_foil_2,rdf_all_zVertex_foil_3,
+                           rdf_all_zVertex_foil_4,rdf_all_zVertex_foil_5,rdf_all_zVertex_foil_6,
+                           rdf_all_zVertex_foil_7,rdf_all_zVertex_foil_8};
 
   //Start defining histograms
 

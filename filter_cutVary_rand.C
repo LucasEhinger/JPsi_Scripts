@@ -1,4 +1,9 @@
 #include "analyzeData.h"
+#include <time.h>
+
+using namespace ROOT;
+using namespace std;
+
 double returnNonZeroPoverE(double em_ebcal, double ep_ebcal, double em_p, double ep_p){
   if(em_ebcal>0){
     return em_p/em_ebcal;}
@@ -30,98 +35,38 @@ bool passEoverP(double p, double Efcal, double Ebcal, bool isFCAL, double sigma_
     return ((p/Ebcal > bcal_mu + sigma_minus * bcal_sigma) && (p/Ebcal < bcal_mu + sigma_plus * bcal_sigma));
 }
 
-void makeVertexPlots(RNode rdf_in,TFile* histFile) {
-  TDirectory* vertexPlots = histFile->mkdir("VertexPlots");
-  vertexPlots->cd();
+void makePlots(RNode rdf_in,TFile* histFile, TDirectory* currentDirectory){
+  TDirectory* jpsiMass_plots = currentDirectory->mkdir("Jpsi_mass");
+  jpsiMass_plots->cd();
 
-  TH1D h_zVertex = *rdf_in.Histo1D(Z_vertex_model,"zVertex","accidweight");
-  h_zVertex.Write();
+  TH1D h_mpair = *rdf_in.Histo1D({"mass_pair","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair.Write();
 
-  TH2D h_xyVertex = *rdf_in.Histo2D(xyVertex_model,"xVertex","yVertex","accidweight");
-  h_xyVertex.Write();
+  TH1D h_mpair_Egamma_7_8p2 = *rdf_in.Filter("(E_gamma<8.2)").Histo1D({"mass_pair_Egamma_7_8p2","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_Egamma_7_8p2.Write();
 
-  TH2D h_xVertex2D = *rdf_in.Histo2D({"xVertex2D","xVertex; Lepton; Proton",100,-1,1,100,-1,1},"xVertexLepton","xVertexProton","accidweight");
-  h_xVertex2D.Write();
+  TH1D h_mpair_Egamma_8p2_11 = *rdf_in.Filter("(E_gamma>8.2)").Histo1D({"mass_pair_Egamma_8p2_11","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_Egamma_8p2_11.Write();
 
-  TH2D h_yVertex2D = *rdf_in.Histo2D({"yVertex2D","yVertex; Lepton; Proton",100,-1,1,100,-1,1},"yVertexLepton","yVertexProton","accidweight");
-  h_yVertex2D.Write();
+  TH1D h_mpair_Egamma_8p2_9p5 = *rdf_in.Filter("((E_gamma>8.2)&&(E_gamma<9.5))").Histo1D({"mass_pair_Egamma_8p2_9p5","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_Egamma_8p2_9p5.Write();
 
-  TH2D h_zVertex2D = *rdf_in.Histo2D({"zVertex2D","zVertex; Lepton; Proton",100,50,80,100,50,80},"zVertexLepton","zVertexProton","accidweight");
-  h_zVertex2D.Write();
+  TH1D h_mpair_Egamma_9p5_11 = *rdf_in.Filter("(E_gamma>9.5)").Histo1D({"mass_pair_Egamma_9p5_11","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_Egamma_9p5_11.Write();
 
-  TH1D h_deltaXYVertex = *rdf_in.Histo1D({"DeltaXYVertex","DeltaXYVertex; Delta r [cm]; Counts",100,-1,1},"deltaXYVertexLepton","accidweight");
-  h_deltaXYVertex.Write();
-
-  TH1D h_deltaZVertex = *rdf_in.Histo1D({"DeltaZVertex","DeltaZVertex; Delta z [cm]; Counts",100,-10,10},"deltaZVertex","accidweight");
-  h_deltaZVertex.Write();
-
-  TH2D h_p_ep_theta_phi = *rdf_in.Histo2D({"p_ep_theta_phi","; Delta Theta [Deg]; Delta Phi [Deg]",100,-180,180,100,-180,180},"deltaTheta_p_ep","deltaPhi_p_ep","accidweight");
-  h_p_ep_theta_phi.Write();
 }
 
-void makePreShowerPlots(RNode rdf_in,TFile* histFile) {
-  TDirectory* preShowerPlots = histFile->mkdir("PreShowerPlots");
-  preShowerPlots->cd();
-
-  TH1D h_em_preB_sin = *rdf_in.Filter("(em_ebcal!=0)").Histo1D(preB_sin_model,"em_eprebcal_sinTheta","accidweight");
-  h_em_preB_sin.SetName("em_eprebcal_sinTheta");
-  h_em_preB_sin.Write();
-
-  TH1D h_ep_preB_sin = *rdf_in.Filter("(ep_ebcal!=0)").Histo1D(preB_sin_model,"ep_eprebcal_sinTheta","accidweight");
-  h_ep_preB_sin.SetName("ep_eprebcal_sinTheta");
-  h_ep_preB_sin.Write();
-}
-
-void makePoverEPlots(RNode rdf_in,TFile* histFile) {
-  TDirectory* pOverEPlots = histFile->mkdir("PoverEPlots");
-  pOverEPlots->cd();
-
-  TH1D h_em_PoverE = *rdf_in.Histo1D(PE_Ratio_model,"em_PoverE","accidweight");
-  h_em_PoverE.SetName("em_PoverE");
-  h_em_PoverE.SetTitle("P/E");
-  h_em_PoverE.Write();
-
-  TH1D h_ep_PoverE = *rdf_in.Histo1D(PE_Ratio_model,"ep_PoverE","accidweight");
-  h_ep_PoverE.SetName("ep_PoverE");
-  h_ep_PoverE.SetTitle("P/E");
-  h_ep_PoverE.Write();
-
-  TH1D h_lep_PoverE = h_em_PoverE+h_ep_PoverE;
-  h_lep_PoverE.SetName("lep_PoverE");
-  h_lep_PoverE.SetTitle("P/E");
-  h_lep_PoverE.Write();
-
-  TH2D h_PoverE_2D = *rdf_in.Histo2D(EP_2DModel,"em_PoverE","ep_PoverE","accidweight");
-  h_PoverE_2D.SetName("PoverE_2D");
-  h_PoverE_2D.SetTitle("P/E");
-  h_PoverE_2D.Write();
-}
-
-void makeEmissPlots(RNode rdf_in,TFile* histFile) {
-  TDirectory* eMissPlots = histFile->mkdir("EmissPlots");
-  eMissPlots->cd();
-
-  TH1D h_E_miss = *rdf_in.Histo1D(E_miss_model,"E_miss_stat_p","accidweight");
-  h_E_miss.SetName("Emiss");
-  h_E_miss.SetTitle("Emiss: stationary proton; E_miss [GeV]");
-  h_E_miss.Write();
-}
-
-
-void filterAll(string inFileName, string outFileName, string outHistName, string treeName = "e_e_p_X", string track_shower_sel="1",
-               string preBCut="0.030", string sigma_minus="-3", string sigma_plus="2", string EMissCut="1")
+void filter_cutVary(string inFileName, string outFileName, string treeName = "e_e_p_X", string numIters="5")
 {
 
-  using namespace ROOT;
-  using namespace std;
+// Time the script:
+  clock_t tStart = clock();
 
-//  EnableImplicitMT();
+  EnableImplicitMT();
   TChain chain(treeName.c_str());
   chain.Add(inFileName.c_str());
 
   RDataFrame rdf_raw(chain);
-  TFile * histFile = new TFile(outHistName.c_str(),"RECREATE");
-  histFile->cd();
 
   auto rdf_def = rdf_raw
           .Define("mN","0.938")
@@ -199,70 +144,83 @@ void filterAll(string inFileName, string outFileName, string outHistName, string
           .Define("deltaTheta_p_ep","(p_p4_meas.Theta()-ep_p4_meas.Theta())*180/3.14159")
           .Define("deltaPhi_p_ep","(p_p4_meas.Phi()-ep_p4_meas.Phi())*180/3.14159")
           .Define("em_isFCAL","em_efcal > em_ebcal")
-          .Define("ep_isFCAL","ep_efcal > ep_ebcal")\
-          .Filter("L1TriggerBits>0");
-
-  //Make vertex histograms
-  makeVertexPlots(rdf_def,histFile);
+          .Define("ep_isFCAL","ep_efcal > ep_ebcal");
 
   auto rdf_fiducial=rdf_def.Filter("(jpsi_m_pair > 2) && (jpsi_m_pair < 3.5)")
           .Filter("(zVertex > 51) && (zVertex < 79) && (xVertex*xVertex + yVertex*yVertex < 1*1)")
           .Filter("(em_theta > 2) && (ep_theta > 2) && (p_theta > 2)")
           .Filter("(em_p > 0.4) && (ep_p > 0.4) && (p_p > 0.4)");
 
+  string track_shower_sel="1";
   string track_shower_cut="";
   switch (stoi(track_shower_sel)){
     case 0:
-      track_shower_cut="((unusedShowers == 0) && (unusedTracks == 0))";
+      track_shower_cut="(unusedShowers == 0) && (unusedTracks == 0)";
       break;
     case 1:
-      track_shower_cut="((unusedShowers == 0) && (unusedTracks < 2))";
+      track_shower_cut="(unusedShowers == 0) && (unusedTracks < 2)";
       break;
     case 2:
-      track_shower_cut="((unusedShowers < 2) && (unusedTracks == 0))";
+      track_shower_cut="(unusedShowers < 2) && (unusedTracks == 0)";
       break;
     case 3:
-      track_shower_cut="((unusedShowers < 2) && (unusedTracks < 2))";
+      track_shower_cut="(unusedShowers < 2) && (unusedTracks < 2)";
       break;
     default:
-      track_shower_cut="((unusedShowers == 0) && (unusedTracks == 0))";
+      track_shower_cut="(unusedShowers < 10) && (unusedTracks < 10)";
       break;
   }
   auto rdf_track_shower=rdf_fiducial.Filter(track_shower_cut.c_str());
 
-  //Make pre-shower histograms
-  makePreShowerPlots(rdf_track_shower,histFile);
 
-  auto rdf_preShower=rdf_track_shower.Filter("(em_eprebcal_sinTheta > " +preBCut + ") || (em_efcal > 0 )")
-          .Filter("(ep_eprebcal_sinTheta > " +preBCut + ") || (ep_efcal > 0 )");
+  auto rand3 = new TRandom3(3096);
 
-  //Make p/E histograms
-  makePoverEPlots(rdf_preShower,histFile);
+  double preBCut_min=0.25;
+  double preBCut_max=0.35;
+  double sigma_minus_min=-3.5;
+  double sigma_minus_max=-2.5;
+  double sigma_plus_min=1.5;
+  double sigma_plus_max=2.5;
+  double EMissCut_min=0.5;
+  double EMissCut_max=1.5;
 
-  auto rdf_PoverE=rdf_preShower.Filter("(passEoverP(em_p4_kin.P(),em_efcal,em_ebcal,em_isFCAL," + sigma_minus + "," + sigma_plus + "))")
-          .Filter("(passEoverP(ep_p4_kin.P(),ep_efcal,ep_ebcal,ep_isFCAL," + sigma_minus + "," + sigma_plus + "))");
+  //Apply the loosest set of cuts possible, to make all further calculations easier.
+  //All additional varied cuts will start from rdf_trimmed
 
-  //make E_miss histograms
-  makeEmissPlots(rdf_PoverE,histFile);
+  auto rdf_trimmed=rdf_track_shower.Filter("(em_eprebcal_sinTheta > " + to_string(preBCut_min) + ") || (em_efcal > 0 )")
+          .Filter("(ep_eprebcal_sinTheta > " +to_string(preBCut_min) + ") || (ep_efcal > 0 )")
+          .Filter("(passEoverP(em_p4_kin.P(),em_efcal,em_ebcal,em_isFCAL," + to_string(sigma_minus_min) + "," + to_string(sigma_plus_max) + "))")
+          .Filter("(passEoverP(ep_p4_kin.P(),ep_efcal,ep_ebcal,ep_isFCAL," + to_string(sigma_minus_min) + "," + to_string(sigma_plus_max) + "))")
+          .Filter("(fabs(E_miss_stat_p) < " + to_string(EMissCut_max) + ")");
 
-  auto rdf_final=rdf_PoverE.Filter("(fabs(E_miss_stat_p) < " + EMissCut + ")");
+  TFile * histFile = new TFile(outFileName.c_str(),"RECREATE");
+  histFile->cd();
 
-  TDirectory* massPairPlots = histFile->mkdir("MassPairPlots");
-  massPairPlots->cd();
+  for(int i=0;i<stoi(numIters);i++){
+    string preBCut = to_string(rand3->Uniform(preBCut_min,preBCut_max));
+    string sigma_minus = to_string(rand3->Uniform(sigma_minus_min,sigma_minus_max));
+    string sigma_plus = to_string(rand3->Uniform(sigma_plus_min,sigma_plus_max));
+    string EMissCut = to_string(rand3->Uniform(EMissCut_min,EMissCut_max));
 
-  vector<string> name_vec = {"All","Fiducial","TrackShower","preBCal","PoverE","Emiss"};
+    auto rdf_preShower=rdf_trimmed.Filter("(em_eprebcal_sinTheta > " +preBCut + ") || (em_efcal > 0 )")
+            .Filter("(ep_eprebcal_sinTheta > " +preBCut + ") || (ep_efcal > 0 )");
 
-  vector<RNode> rdf_vec = {rdf_def, rdf_fiducial, rdf_track_shower,rdf_preShower,rdf_PoverE,rdf_final};
+    auto rdf_PoverE=rdf_preShower.Filter("(passEoverP(em_p4_kin.P(),em_efcal,em_ebcal,em_isFCAL," + sigma_minus + "," + sigma_plus + "))")
+            .Filter("(passEoverP(ep_p4_kin.P(),ep_efcal,ep_ebcal,ep_isFCAL," + sigma_minus + "," + sigma_plus + "))");
 
-  for(int i=0; i<rdf_vec.size();i++) {
-    TH1D h_mpair = *(rdf_vec[i]).Histo1D(mass_model, "jpsi_m_pair", "accidweight");
-    string h_mpair_name="mass_pair_"+name_vec[i];
-    h_mpair.SetName(h_mpair_name.c_str());
-    h_mpair.Write();
+    auto rdf_final=rdf_PoverE.Filter("(fabs(E_miss_stat_p) < " + EMissCut + ")");
+
+    TDirectory* iteration_dir = histFile->mkdir(("Iteration_"+to_string(i)).c_str());
+    iteration_dir->cd();
+    string paramVals=preBCut+";"+sigma_minus+";"+sigma_minus+";"+EMissCut+";";
+    TNamed params("param_vals",paramVals.c_str());
+
+    params.Write();
+    makePlots(rdf_final,histFile,iteration_dir);
   }
 
-  histFile->Close();
+  clock_t tEnd = clock();
+  double elapsed = (double(tEnd - tStart)/CLOCKS_PER_SEC/60);
 
-  rdf_final.Snapshot(treeName.c_str(),outFileName.c_str());
-//  rdf_final.Snapshot(treeName.c_str(),outFileName.c_str(),{"em_eprebcal_sinTheta","em_efcal","em_ebcal","em_isFCAL","em_p4_kin","ep_eprebcal_sinTheta","ep_efcal","ep_ebcal","ep_isFCAL","ep_p4_kin","E_miss_stat_p","E_gamma","jpsi_m_pair","accidweight"});
+  printf("Total time: %.2f min.\n", elapsed);
 }
