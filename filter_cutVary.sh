@@ -11,7 +11,7 @@ workFolder="/w/halld-scshelf2101/halld2/home/ehingerl/analysis/jpsi/trees/"
 inFOLDER=/lustre19/expphy/volatile/halld/home/ehingerl/jpsi/trees/v8/filtered/noTrackShower/loose/
 #outFOLDER=/lustre19/expphy/volatile/halld/home/ehingerl/jpsi/trees/v7/PoverE2/m3_p2_sigma/noTracks/preB_03/Emiss_1
 
-n_samples_per_cut=7
+n_samples_per_cut=5
 
 IFS=$'\n'
 FOLDERS=($(find ${inFOLDER} -name "data_tree_D.root"))
@@ -23,11 +23,11 @@ for j in ${!FOLDERS[@]}; do
   outFolder=${workFolder}${inFolder##*trees}
 
   mkdir -p ${outFolder}
-#  for i in ${!Targets[@]}; do
-#    INPUTFILE=${inFolder}/data_tree_${Targets[$i]}.root
-#    TREE=${outFolder}/data_hist_cutVary_${Targets[$i]}.root
-#    root -q -b 'filter_cutVary.C("'${INPUTFILE}'","'${TREE}'","'${TreeNames[$i]}'","'${n_samples_per_cut}'")'
-#  done
+  for i in ${!Targets[@]}; do
+    INPUTFILE=${inFolder}/data_tree_${Targets[$i]}.root
+    TREE=${outFolder}/data_hist_cutVary_${Targets[$i]}.root
+    root -q -b 'filter_cutVary.C("'${INPUTFILE}'","'${TREE}'","'${TreeNames[$i]}'","'${n_samples_per_cut}'")'
+  done
 
   for isMixed in ${mixedStrings[@]}; do
     for MFSRC in ${MFSRCStrings[@]}; do
