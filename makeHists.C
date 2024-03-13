@@ -6,7 +6,7 @@
 using namespace ROOT;
 using namespace std;
 
-void makeParticleKinPlots(RNode rdf_in,TFile* histFile, TDirectory* currentDirectory,string particle){
+void makeParticleKinPlots(RNode rdf_in, TDirectory* currentDirectory,string particle){
 
   auto rdf_ROI=rdf_in.Filter("((jpsi_m_pair>3)&&(jpsi_m_pair<3.2))");
   auto rdf_SB=rdf_in.Filter("(((jpsi_m_pair>2.9)&&(jpsi_m_pair<3))||((jpsi_m_pair>3.2)&&(jpsi_m_pair<3.3)))");
@@ -95,7 +95,7 @@ void makeParticleKinPlots(RNode rdf_in,TFile* histFile, TDirectory* currentDirec
   }
 }
 
-void makeKinPlots(RNode rdf_in,TFile* histFile, TDirectory* currentDirectory){
+void makeKinPlots(RNode rdf_in, TDirectory* currentDirectory){
   auto rdf_ROI= rdf_in.Filter("((jpsi_m_pair>3)&&(jpsi_m_pair<3.2))");
   auto rdf_SB= rdf_in.Filter("(((jpsi_m_pair>2.9)&&(jpsi_m_pair<3))||((jpsi_m_pair>3.2)&&(jpsi_m_pair<3.3)))");
 
@@ -103,8 +103,11 @@ void makeKinPlots(RNode rdf_in,TFile* histFile, TDirectory* currentDirectory){
   TDirectory* ROI_plots = currentDirectory->mkdir("ROI");
   ROI_plots->cd();
 
-  TH1D h_t_new_ROI = *rdf_ROI.Histo1D({"t_kin_minus_ROI","; t [GeV]; Counts",1000,0,10},"t_kin_minus","accidweight");
-  h_t_new_ROI.Write();
+  TH1D h_t_ROI = *rdf_ROI.Histo1D({"t_kin_minus_ROI","; t [GeV]; Counts",1000,0,10},"t_kin_minus","accidweight");
+  h_t_ROI.Write();
+
+  TH1D h_t_lc_ROI = *rdf_ROI.Histo1D({"t_kin_minus_lc_ROI","; t [GeV]; Counts",1000,0,10},"t_kin_minus_lc","accidweight");
+  h_t_lc_ROI.Write();
 
   TH1D h_alpha_miss_ROI = *rdf_ROI.Histo1D({"alpha_miss_ROI","; alpha_miss; Counts",1000,0,2.5},"alpha_miss","accidweight");
   h_alpha_miss_ROI.Write();
@@ -133,6 +136,9 @@ void makeKinPlots(RNode rdf_in,TFile* histFile, TDirectory* currentDirectory){
   h_E_miss_ROI.SetTitle("missing Energy: stationary proton; E_miss [GeV]");
   h_E_miss_ROI.Write();
 
+  TH1D h_jpsi_beta_gamma_ROI = *rdf_ROI.Histo1D({"jpsi_beta_gamma","; jpsi_beta_gamma; Counts",1000,0,5},"jpsi_beta_gamma","accidweight");
+  h_jpsi_beta_gamma_ROI.Write();
+
   TH2D h_alpha_miss_vs_Egamma_ROI = *rdf_ROI.Histo2D({"alpha_miss_vs_Egamma","; alpha_miss; Egamma [GeV]",100,0,2.5,100,6,11},"alpha_miss","E_gamma","accidweight");
   h_alpha_miss_vs_Egamma_ROI.Write();
 
@@ -147,8 +153,11 @@ void makeKinPlots(RNode rdf_in,TFile* histFile, TDirectory* currentDirectory){
   TDirectory* SB_plots = currentDirectory->mkdir("SB");
   SB_plots->cd();
 
-  TH1D h_t_new_SB = *rdf_SB.Histo1D({"t_kin_minus_SB","; t [GeV]; Counts",1000,0,10},"t_kin_minus","accidweight");
-  h_t_new_SB.Write();
+  TH1D h_t_SB = *rdf_ROI.Histo1D({"t_kin_minus_SB","; t [GeV]; Counts",1000,0,10},"t_kin_minus","accidweight");
+  h_t_SB.Write();
+
+  TH1D h_t_lc_SB = *rdf_ROI.Histo1D({"t_kin_minus_lc_SB","; t [GeV]; Counts",1000,0,10},"t_kin_minus_lc","accidweight");
+  h_t_lc_SB.Write();
 
   TH1D h_alpha_miss_SB = *rdf_SB.Histo1D({"alpha_miss_SB","; alpha_miss; Counts",1000,0,2.5},"alpha_miss","accidweight");
   h_alpha_miss_SB.Write();
@@ -191,9 +200,13 @@ void makeKinPlots(RNode rdf_in,TFile* histFile, TDirectory* currentDirectory){
   TDirectory* SBS_plots = currentDirectory->mkdir("SBS");
   SBS_plots->cd();
 
-  TH1D h_t_new_SBS = h_t_new_ROI - h_t_new_SB;
-  h_t_new_SBS.SetName("t_kin_minus_SBS");
-  h_t_new_SBS.Write();
+  TH1D h_t_SBS = h_t_ROI - h_t_SB;
+  h_t_SBS.SetName("t_kin_minus_SBS");
+  h_t_SBS.Write();
+
+  TH1D h_t_lc_SBS = h_t_lc_ROI - h_t_lc_SB;
+  h_t_lc_SBS.SetName("t_kin_minus_lc_SBS");
+  h_t_lc_SBS.Write();
 
   TH1D h_alpha_miss_SBS = h_alpha_miss_ROI - h_alpha_miss_SB;
   h_alpha_miss_SBS.SetName("alpha_miss_SBS");
@@ -222,6 +235,20 @@ void makeKinPlots(RNode rdf_in,TFile* histFile, TDirectory* currentDirectory){
 
   TH1D h_E_miss_SBS = h_E_miss_ROI - h_E_miss_SB;
   h_E_miss_SBS.Write();
+  //</editor-fold>
+
+  //<editor-fold desc="Simulation Plots">
+  try{
+    TDirectory* Sim_plots = currentDirectory->mkdir("Sim");
+    Sim_plots->cd();
+
+    TH1D h_delta_t_thrown_ROI = *rdf_ROI.Histo1D({"delta_t_thrown_ROI","; t true - t kin [GeV]; Counts",1000,-10,10},"delta_t_thrown","accidweight");
+    h_delta_t_thrown_ROI.Write();
+
+    TH1D h_delta_t_thrown_lc_ROI = *rdf_ROI.Histo1D({"delta_t_thrown_lc_ROI","; t true - t light cone [GeV]; Counts",1000,-10,10},"delta_t_thrown_lc","accidweight");
+    h_delta_t_thrown_lc_ROI.Write();
+  }
+  catch(...){}
   //</editor-fold>
 
   //<editor-fold desc="Kin2D">
@@ -270,9 +297,41 @@ void makeKinPlots(RNode rdf_in,TFile* histFile, TDirectory* currentDirectory){
   TH1D h_mpair = *rdf_in.Histo1D({"mass_pair","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
   h_mpair.Write();
 
-  TH1D h_mpair_nn = *rdf_in.Filter("(accidweight>0)").Histo1D(mass_model,"jpsi_m_pair","accidweight");
-  h_mpair_nn.SetName("mass_pair_no_neg");
+  TH1D h_mpair_nn = *rdf_in.Filter("(accidweight>0)").Histo1D({"mass_pair_no_neg","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
   h_mpair_nn.Write();
+
+  TH1D h_mpair_accid = *rdf_in.Filter("(accidweight<0)").Histo1D({"mass_pair_neg","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_accid.Write();
+
+  TH1D h_mpair_Egamma_9p5_lower = *rdf_in.Filter("E_gamma<9.5").Histo1D({"mpair_Egamma_9p5_lower","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_Egamma_9p5_lower.Write();
+
+  TH1D h_mpair_Egamma_9p5_upper = *rdf_in.Filter("E_gamma>9.5").Histo1D({"mpair_Egamma_9p5_upper","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_Egamma_9p5_upper.Write();
+
+  TH1D h_mpair_minus_t_1_lower = *rdf_in.Filter("t_kin_minus<1").Histo1D({"mpair_minus_t_1_lower","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_minus_t_1_lower.Write();
+
+  TH1D h_mpair_minus_t_1_upper = *rdf_in.Filter("t_kin_minus>1").Histo1D({"mpair_minus_t_1_upper","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_minus_t_1_upper.Write();
+
+  TH1D h_mpair_minus_t_lc_1_lower = *rdf_in.Filter("t_kin_minus_lc<1").Histo1D({"mpair_minus_t_lc_1_lower","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_minus_t_lc_1_lower.Write();
+
+  TH1D h_mpair_minus_t_lc_1_upper = *rdf_in.Filter("t_kin_minus_lc>1").Histo1D({"mpair_minus_t_lc_1_upper","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_minus_t_lc_1_upper.Write();
+
+  TH1D h_mpair_betagamma_2p75_lower = *rdf_in.Filter("jpsi_beta_gamma<2.75").Histo1D({"mpair_betagamma_2p75_lower","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_betagamma_2p75_lower.Write();
+
+  TH1D h_mpair_betagamma_2p75_upper = *rdf_in.Filter("jpsi_beta_gamma>2.75").Histo1D({"mpair_betagamma_2p75_upper","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_betagamma_2p75_upper.Write();
+
+  TH1D h_mpair_jpsi_alpha_0p6_lower = *rdf_in.Filter("jpsi_alpha<0.6").Histo1D({"mpair_jpsi_alpha_0p6_lower","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_jpsi_alpha_0p6_lower.Write();
+
+  TH1D h_mpair_jpsi_alpha_0p6_upper = *rdf_in.Filter("jpsi_alpha>0.6").Histo1D({"mpair_jpsi_alpha_0p6_upper","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_jpsi_alpha_0p6_upper.Write();
 
   TH2D h_mpair_v_mkin = *rdf_in.Histo2D({"mpair_v_mkin","; m_ee (Pair) [GeV/c^2]; m_ee (Kin) [GeV/c^2]",500,2,3.5,500,2,3.5},"jpsi_m_pair","jpsi_m_kin","accidweight");
   h_mpair_v_mkin.Write();
@@ -283,26 +342,26 @@ void makeKinPlots(RNode rdf_in,TFile* histFile, TDirectory* currentDirectory){
 
 }
 
-void makeAllPlots(RNode rdf_in,TFile* histFile, TDirectory* currentDirectory){
+void makeAllPlots(RNode rdf_in, TDirectory* currentDirectory){
   TDirectory* kinematic_plots = currentDirectory->mkdir("Kin");
   kinematic_plots->cd();
-  makeKinPlots(rdf_in, histFile, kinematic_plots);
+  makeKinPlots(rdf_in, kinematic_plots);
 
   TDirectory* jpsi_plots = currentDirectory->mkdir("jpsi");
   jpsi_plots->cd();
-  makeParticleKinPlots(rdf_in, histFile, jpsi_plots,"jpsi");
+  makeParticleKinPlots(rdf_in, jpsi_plots,"jpsi");
 
   TDirectory* p_plots = currentDirectory->mkdir("p");
   p_plots->cd();
-  makeParticleKinPlots(rdf_in, histFile, p_plots,"p");
+  makeParticleKinPlots(rdf_in, p_plots,"p");
 
   TDirectory* em_plots = currentDirectory->mkdir("em");
   em_plots->cd();
-  makeParticleKinPlots(rdf_in, histFile, em_plots,"em");
+  makeParticleKinPlots(rdf_in, em_plots,"em");
 
   TDirectory* ep_plots = currentDirectory->mkdir("ep");
   ep_plots->cd();
-  makeParticleKinPlots(rdf_in, histFile, ep_plots,"ep");
+  makeParticleKinPlots(rdf_in, ep_plots,"ep");
 }
 
 void makeHists(string inFileName, string outFileName, string treeName = "e_e_p_X")
@@ -339,17 +398,22 @@ void makeHists(string inFileName, string outFileName, string treeName = "e_e_p_X
 
   auto rdf_pT_alphaCut=rdf_final.Filter("(tot_perp < 0.8-0.8/1.4*alpha_miss)");
 
+  auto rdf_ROI_2p85_3p05=rdf_final.Filter("((jpsi_m_pair>2.85)&&(jpsi_m_pair<3.05))");
+  auto rdf_ROI_3p05_3p25=rdf_final.Filter("((jpsi_m_pair>3.05)&&(jpsi_m_pair<3.25))");
+
 
 
   vector<string> name_vec = {"All", "SubThresh", "AboveThresh", "AboveThresh_lower", "AboveThresh_upper",
                              "All_pt03_lower","All_pt03_upper","SubThresh_pt03_lower","SubThresh_pt03_upper",
                              "AboveThresh_pt03_lower","AboveThresh_pt03_upper",
-                             "All_alpha1p2_lower","All_alpha1p2_upper","All_pt_alpha"};
+                             "All_alpha1p2_lower","All_alpha1p2_upper","All_pt_alpha",
+                             "All_ROI_2p85_3p05","All_ROI_3p05_3p25"};
 
   vector<RNode> rdf_vec = {rdf_final, rdf_subThresh, rdf_aboveThresh, rdf_aboveThresh_lower, rdf_aboveThresh_upper,
                            rdf_all_pt03_lower,rdf_all_pt03_upper,rdf_subThresh_pt03_lower,rdf_subThresh_pt03_upper,
                            rdf_aboveThresh_pt03_lower,rdf_aboveThresh_pt03_upper,
-                           rdf_all_alpha1p2_lower,rdf_all_alpha1p2_upper,rdf_pT_alphaCut};
+                           rdf_all_alpha1p2_lower,rdf_all_alpha1p2_upper,rdf_pT_alphaCut,
+                           rdf_ROI_2p85_3p05,rdf_ROI_3p05_3p25};
 
   //Start defining histograms
 
@@ -360,96 +424,7 @@ void makeHists(string inFileName, string outFileName, string treeName = "e_e_p_X
   for(int i=0; i<rdf_vec.size();i++){
     TDirectory* sub_dir = histFile->mkdir(name_vec[i].c_str());
     sub_dir->cd();
-    makeAllPlots(rdf_vec[i],histFile, sub_dir);
+    makeAllPlots(rdf_vec[i], sub_dir);
   }
-
-
-//Old Plots. Not currently using, but might want later
-
-//  //<editor-fold desc="Pion Rejection">
-//  TDirectory* PionRejectPlots = histFile->mkdir("PionRejection");
-//  PionRejectPlots->cd();
-//
-////  TH2D h_Cal_PoverE = *rdf_final.Filter("(fcal_PoverE>0)").Filter("bcal_PoverE>0")
-////          .Histo2D(EP_2DModel,"fcal_PoverE","bcal_PoverE","accidweight");
-////  h_Cal_PoverE.SetName("Cal_PoverE");
-////  h_Cal_PoverE.SetTitle("; fcal p/E; bcal p/E");
-////  h_Cal_PoverE.Write();
-////
-////
-////  TH1D h_fCal_PoverE = *rdf_final.Histo1D(PE_Ratio_model,"fcal_PoverE","accidweight");
-////  h_fCal_PoverE.SetName("fcal_PoverE");
-////  h_fCal_PoverE.SetTitle("P/E");
-////  h_fCal_PoverE.Write();
-////
-////  TH1D h_bCal_PoverE = *rdf_final.Histo1D(PE_Ratio_model,"bcal_PoverE","accidweight");
-////  h_bCal_PoverE.SetName("bcal_PoverE");
-////  h_bCal_PoverE.SetTitle("P/E");
-////  h_bCal_PoverE.Write();
-//
-//  TH1D h_em_PoverE = *rdf_final.Histo1D(PE_Ratio_model,"em_PoverE","accidweight");
-//  h_em_PoverE.SetName("em_PoverE");
-//  h_em_PoverE.SetTitle("P/E");
-//  h_em_PoverE.Write();
-//
-//  TH1D h_ep_PoverE = *rdf_final.Histo1D(PE_Ratio_model,"ep_PoverE","accidweight");
-//  h_ep_PoverE.SetName("ep_PoverE");
-//  h_ep_PoverE.SetTitle("P/E");
-//  h_ep_PoverE.Write();
-//
-//  TH1D h_lep_PoverE = h_em_PoverE+h_ep_PoverE;
-//  h_lep_PoverE.SetName("lep_PoverE");
-//  h_lep_PoverE.SetTitle("P/E");
-//  h_lep_PoverE.Write();
-//
-//  TH1D h_em_preB_sin = *rdf_final.Filter("(em_ebcal!=0)").Histo1D(preB_sin_model,"em_eprebcal_sinTheta","accidweight");
-//  h_em_preB_sin.SetName("em_eprebcal_sinTheta");
-//  h_em_preB_sin.Write();
-//
-//  TH1D h_ep_preB_sin = *rdf_final.Filter("(ep_ebcal!=0)").Histo1D(preB_sin_model,"ep_eprebcal_sinTheta","accidweight");
-//  h_ep_preB_sin.SetName("ep_eprebcal_sinTheta");
-//  h_ep_preB_sin.Write();
-//
-//  TH2D h_PoverE_2D = *rdf_final.Histo2D(EP_2DModel,"em_PoverE","ep_PoverE","accidweight");
-//  h_PoverE_2D.SetName("PoverE_2D");
-//  h_PoverE_2D.SetTitle("P/E");
-//  h_PoverE_2D.Write();
-//  //</editor-fold>
-//
-//
-//  //<editor-fold desc="Vertex">
-//  TDirectory* vertexPlots = histFile->mkdir("Vertex");
-//  vertexPlots->cd();
-//
-//  TH1D h_zVertex = *rdf_final.Filter("(accidweight>0)").Histo1D(Z_vertex_model,"zVertex","accidweight");
-//  h_zVertex.Write();
-//
-//  TH2D h_xyVertex = *rdf_final.Histo2D(xyVertex_model,"xVertex","yVertex","accidweight");
-//  h_xyVertex.SetName("xyVertex");
-//  h_xyVertex.SetTitle("Hit Locations; x [cm]; y [cm]");
-//  h_xyVertex.Write();
-//
-//  TDirectory* vertexROI = vertexPlots->mkdir("ROI");
-//  vertexROI->cd();
-//
-//
-//  TH2D h_xVertex2D = *rdf_ROI.Histo2D({"xVertex2D","xVertex; Lepton; Proton",100,-1,1,100,-1,1},"xVertexLepton","xVertexProton","accidweight");
-//  h_xVertex2D.Write();
-//
-//  TH2D h_yVertex2D = *rdf_ROI.Histo2D({"yVertex2D","yVertex; Lepton; Proton",100,-1,1,100,-1,1},"yVertexLepton","yVertexProton","accidweight");
-//  h_yVertex2D.Write();
-//
-//  TH2D h_zVertex2D = *rdf_ROI.Histo2D({"zVertex2D","zVertex; Lepton; Proton",100,50,80,100,50,80},"zVertexLepton","zVertexProton","accidweight");
-//  h_zVertex2D.Write();
-//
-//  TH1D h_deltaXYVertex = *rdf_ROI.Histo1D({"DeltaXYVertex","DeltaXYVertex; Delta r [cm]; Counts",100,-1,1},"deltaXYVertexLepton","accidweight");
-//  h_deltaXYVertex.Write();
-//
-//  TH1D h_deltaZVertex = *rdf_ROI.Histo1D({"DeltaZVertex","DeltaZVertex; Delta z [cm]; Counts",100,-10,10},"deltaZVertex","accidweight");
-//  h_deltaZVertex.Write();
-//
-//  TH2D h_p_ep_theta_phi = *rdf_ROI.Histo2D({"p_ep_theta_phi","; Delta Theta [Deg]; Delta Phi [Deg]",100,-180,180,100,-180,180},"deltaTheta_p_ep","deltaPhi_p_ep","accidweight");
-//  h_p_ep_theta_phi.Write();
-//  //</editor-fold>
 
 }

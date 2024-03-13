@@ -23,17 +23,17 @@ for j in ${!FOLDERS[@]}; do
   outFolder=${workFolder}${inFolder##*trees}
 
   mkdir -p ${outFolder}
-  for i in ${!Targets[@]}; do
-    INPUTFILE=${inFolder}/data_tree_${Targets[$i]}.root
-    TREE=${outFolder}/data_hist_cutVary_${Targets[$i]}.root
-    root -q -b 'filter_cutVary.C("'${INPUTFILE}'","'${TREE}'","'${TreeNames[$i]}'","'${n_samples_per_cut}'")'
-  done
+#  for i in ${!Targets[@]}; do
+#    INPUTFILE=${inFolder}/data_tree_${Targets[$i]}.root
+#    TREE=${outFolder}/data_hist_cutVary2_${Targets[$i]}.root
+#    root -q -b 'filter_cutVary.C("'${INPUTFILE}'","'${TREE}'","'${TreeNames[$i]}'","'${n_samples_per_cut}'")'
+#  done
 
   for isMixed in ${mixedStrings[@]}; do
     for MFSRC in ${MFSRCStrings[@]}; do
       for i in ${!TargetsSIM[@]}; do
         INPUTFILE=${inFolder}/tree_DSelector_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}root
-        TREE=${outFolder}/hist_cutVary_DSelector_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}root
+        TREE=${outFolder}/hist_cutVary2_DSelector_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}root
         if [[ ${TargetsSIM[$i]} != "2H" || ${MFSRC} != "SRC" ]]
         then
           root -q -b 'filter_cutVary.C("'${INPUTFILE}'","'${TREE}'","'${TreeNames[$i]}'","'${n_samples_per_cut}'")'

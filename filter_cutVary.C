@@ -42,17 +42,28 @@ void makePlots(RNode rdf_in,TFile* histFile, TDirectory* currentDirectory){
   TH1D h_mpair = *rdf_in.Histo1D({"mass_pair","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
   h_mpair.Write();
 
-  TH1D h_mpair_Egamma_7_8p2 = *rdf_in.Filter("(E_gamma<8.2)").Histo1D({"mass_pair_Egamma_7_8p2","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
-  h_mpair_Egamma_7_8p2.Write();
+  TH1D h_mpair_pt03 = *rdf_in.Filter("tot_perp<0.3").Histo1D({"mass_pair_pt03","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_pt03.Write();
 
-  TH1D h_mpair_Egamma_8p2_11 = *rdf_in.Filter("(E_gamma>8.2)").Histo1D({"mass_pair_Egamma_8p2_11","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
-  h_mpair_Egamma_8p2_11.Write();
+  TH1D h_mpair_alpha1p2 = *rdf_in.Filter("alpha_miss<1.2").Histo1D({"mass_pair_alpha1p2","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_alpha1p2.Write();
 
-  TH1D h_mpair_Egamma_8p2_9p5 = *rdf_in.Filter("((E_gamma>8.2)&&(E_gamma<9.5))").Histo1D({"mass_pair_Egamma_8p2_9p5","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
-  h_mpair_Egamma_8p2_9p5.Write();
+  TH1D h_mpair_pt_alpha = *rdf_in.Filter("(tot_perp < 0.8-0.8/1.4*alpha_miss)").Histo1D({"mass_pair_pt_alpha","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+  h_mpair_pt_alpha.Write();
 
-  TH1D h_mpair_Egamma_9p5_11 = *rdf_in.Filter("(E_gamma>9.5)").Histo1D({"mass_pair_Egamma_9p5_11","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
-  h_mpair_Egamma_9p5_11.Write();
+
+
+//  TH1D h_mpair_Egamma_7_8p2 = *rdf_in.Filter("(E_gamma<8.2)").Histo1D({"mass_pair_Egamma_7_8p2","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+//  h_mpair_Egamma_7_8p2.Write();
+//
+//  TH1D h_mpair_Egamma_8p2_11 = *rdf_in.Filter("(E_gamma>8.2)").Histo1D({"mass_pair_Egamma_8p2_11","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+//  h_mpair_Egamma_8p2_11.Write();
+//
+//  TH1D h_mpair_Egamma_8p2_9p5 = *rdf_in.Filter("((E_gamma>8.2)&&(E_gamma<9.5))").Histo1D({"mass_pair_Egamma_8p2_9p5","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+//  h_mpair_Egamma_8p2_9p5.Write();
+//
+//  TH1D h_mpair_Egamma_9p5_11 = *rdf_in.Filter("(E_gamma>9.5)").Histo1D({"mass_pair_Egamma_9p5_11","; m_ee [GeV]; Counts",2000,2,4},"jpsi_m_pair","accidweight");
+//  h_mpair_Egamma_9p5_11.Write();
 
 }
 
