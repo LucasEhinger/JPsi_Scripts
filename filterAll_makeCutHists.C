@@ -86,6 +86,27 @@ void makePoverEPlots(RNode rdf_in) {
   h_PoverE_2D.SetName("PoverE_2D");
   h_PoverE_2D.SetTitle("P/E");
   h_PoverE_2D.Write();
+
+  TH1D h_fcal_em_PoverE = *rdf_in.Filter("em_isFCAL>0").Histo1D(PE_Ratio_model,"em_PoverE","accidweight");
+  TH1D h_fcal_ep_PoverE = *rdf_in.Filter("ep_isFCAL>0").Histo1D(PE_Ratio_model,"ep_PoverE","accidweight");
+  TH1D h_fcal_lep_PoverE = h_fcal_em_PoverE+h_fcal_ep_PoverE;
+  h_fcal_lep_PoverE.SetName("fcal_PoverE");
+  h_fcal_lep_PoverE.SetTitle("fcal P/E");
+  h_fcal_lep_PoverE.Write();
+
+  TH1D h_bcal_em_PoverE = *rdf_in.Filter("em_isFCAL==0").Histo1D(PE_Ratio_model,"em_PoverE","accidweight");
+  TH1D h_bcal_ep_PoverE = *rdf_in.Filter("ep_isFCAL==0").Histo1D(PE_Ratio_model,"ep_PoverE","accidweight");
+  TH1D h_bcal_lep_PoverE = h_bcal_em_PoverE+h_bcal_ep_PoverE;
+  h_bcal_lep_PoverE.SetName("bcal_PoverE");
+  h_bcal_lep_PoverE.SetTitle("bcal P/E");
+  h_bcal_lep_PoverE.Write();
+
+  TH2D h_PoverE_cal_1_2D = *rdf_in.Filter("em_isFCAL>0").Filter("ep_isFCAL==0").Histo2D(EP_2DModel,"em_PoverE","ep_PoverE","accidweight");
+  TH2D h_PoverE_cal_2_2D = *rdf_in.Filter("em_isFCAL==0").Filter("ep_isFCAL>0").Histo2D(EP_2DModel,"ep_PoverE","em_PoverE","accidweight");
+  TH2D h_PoverE_cal_2D = h_PoverE_cal_1_2D + h_PoverE_cal_2_2D;
+  h_PoverE_cal_2D.SetName("cal_PoverE_2D");
+  h_PoverE_cal_2D.SetTitle("P/E;fcal p/E;bcal p/E");
+  h_PoverE_cal_2D.Write();
 }
 
 void makeEmissPlots(RNode rdf_in) {

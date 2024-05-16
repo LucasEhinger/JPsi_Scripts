@@ -40,8 +40,8 @@ mkdir -p ${volatileFolder} ${workFolder}
 #done
 
 TargetsSIM=("2H" "4He" "12C")
-TargetsSIM=("12C")
-TreeNames=("gc12_epemprotinc__B4_F4_T1_S2")
+# TargetsSIM=("12C")
+# TreeNames=("gc12_epemprotinc__B4_F4_T1_S2")
 
 mixedStrings=("_mixed")
 MFSRCStrings=("MF" "SRC")
