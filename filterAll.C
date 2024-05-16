@@ -152,11 +152,11 @@ void makeAllPlots(RNode rdf_in, TDirectory* currentDirectory,string track_shower
 
   TDirectory* PreShowerPlots_Before = PreShowerPlots->mkdir("Before");
   PreShowerPlots_Before->cd();
-  makeVertexPlots(rdf_noPreShower);
+  makePreShowerPlots(rdf_noPreShower);
 
   TDirectory* PreShowerPlots_After = PreShowerPlots->mkdir("After");
   PreShowerPlots_After->cd();
-  makeVertexPlots(rdf_final);
+  makePreShowerPlots(rdf_final);
   //</editor-fold>
 
   //<editor-fold desc="PoverE Plots">
@@ -177,11 +177,11 @@ void makeAllPlots(RNode rdf_in, TDirectory* currentDirectory,string track_shower
 
   TDirectory* PoverEPlots_Before = PoverEPlots->mkdir("Before");
   PoverEPlots_Before->cd();
-  makeVertexPlots(rdf_noPoverE);
+  makePoverEPlots(rdf_noPoverE);
 
   TDirectory* PoverEPlots_After = PoverEPlots->mkdir("After");
   PoverEPlots_After->cd();
-  makeVertexPlots(rdf_final);
+  makePoverEPlots(rdf_final);
   //</editor-fold>
 
   //<editor-fold desc="Emiss Plots">
@@ -202,11 +202,11 @@ void makeAllPlots(RNode rdf_in, TDirectory* currentDirectory,string track_shower
 
   TDirectory* EmissPlots_Before = EmissPlots->mkdir("Before");
   EmissPlots_Before->cd();
-  makeVertexPlots(rdf_noEmiss);
+  makeEmissPlots(rdf_noEmiss);
 
   TDirectory* EmissPlots_After = EmissPlots->mkdir("After");
   EmissPlots_After->cd();
-  makeVertexPlots(rdf_final);
+  makeEmissPlots(rdf_final);
   //</editor-fold>
 }
 
@@ -360,6 +360,8 @@ void filterAll(string inFileName, string outFileName, string outHistName, string
   auto rdf_final=rdf_PoverE.Filter("(fabs(E_miss_stat_p) < " + EMissCut + ")");
 
   rdf_final.Snapshot(treeName.c_str(),outFileName.c_str());
+
+//open an 
 
   if(makePlots){
     TFile * histFile = new TFile(outHistName.c_str(),"RECREATE");

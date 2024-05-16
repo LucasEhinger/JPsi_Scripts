@@ -5,7 +5,6 @@ Targets=("D" "He" "C")
 TreeNames=("gd_epemprotinc__B4_F4_T1_S2" "ghe_epemprotinc__B4_F4_T1_S2" "gc12_epemprotinc__B4_F4_T1_S2")
 #TreeNames=("gc12_epemprotinc__B4_F4_T1_S2")
 TargetsSIM=("2H" "4He" "12C")
-TargetsSIM=("2H" "4He")
 #mixedStrings=("." "_mixed.")
 mixedStrings=("_mixed")
 MFSRCStrings=("MF" "SRC")
@@ -25,17 +24,17 @@ for j in ${!FOLDERS[@]}; do
   outFolder=${workFolder}${inFolder##*trees}
 
   mkdir -p ${outFolder}
-  for i in ${!Targets[@]}; do
-    INPUTFILE=${inFolder}/data_tree_${Targets[$i]}.root
-    TREE=${outFolder}/data_hist2_${Targets[$i]}.root
-    root -q -b 'makeHists.C("'${INPUTFILE}'","'${TREE}'","'${TreeNames[$i]}'")'
-  done
+  # for i in ${!Targets[@]}; do
+  #   INPUTFILE=${inFolder}/data_tree_${Targets[$i]}.root
+  #   TREE=${outFolder}/data_hist2_${Targets[$i]}.root
+  #   root -q -b 'makeHists.C("'${INPUTFILE}'","'${TREE}'","'${TreeNames[$i]}'")'
+  # done
 
   for isMixed in ${mixedStrings[@]}; do
     for MFSRC in ${MFSRCStrings[@]}; do
       for i in ${!TargetsSIM[@]}; do
-        INPUTFILE=${inFolder}/tree_DSelector_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}.root
-        TREE=${outFolder}/hist2_DSelector_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}.root
+        INPUTFILE=${inFolder}/tree_DSelector_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}_2.root
+        TREE=${outFolder}/hist2_DSelector_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}_2.root
         if [[ ${TargetsSIM[$i]} != "2H" || ${MFSRC} != "SRC" ]]
         then
           root -q -b 'makeHists.C("'${INPUTFILE}'","'${TREE}'","'${TreeNames[$i]}'")'

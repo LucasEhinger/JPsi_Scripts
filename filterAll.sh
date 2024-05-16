@@ -42,6 +42,8 @@ mkdir -p ${volatileFolder} ${workFolder}
 
 TargetsSIM=("2H" "4He" "12C")
 TargetsSIM=("2H" "4He")
+TargetsSIM=("12C")
+TreeNames=("gc12_epemprotinc__B4_F4_T1_S2")
 mixedStrings=("_mixed")
 MFSRCStrings=("MF" "SRC")
 for isMixed in ${mixedStrings[@]}; do
@@ -49,9 +51,9 @@ for isMixed in ${mixedStrings[@]}; do
     for i in ${!TargetsSIM[@]}; do
       if [[ ${TargetsSIM[$i]} != "2H" || ${MFSRC} != "SRC" ]]
       then
-        INPUTFILE=${inFOLDER_SIM}/tree_DSelector_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}.root
-        TREE=${volatileFolder}/tree_DSelector_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}.root
-        HISTFILE=${workFolder}/hist_cutflow_DSelector_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}.root
+        INPUTFILE=${inFOLDER_SIM}/tree_DSelector_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}_foil.root
+        TREE=${volatileFolder}/tree_DSelector_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}_2.root
+        HISTFILE=${workFolder}/hist_cutflow_DSelector_${TargetsSIM[$i]}_${MFSRC}_helicity${isMixed}_2.root
         root -q -b 'filterAll.C("'${INPUTFILE}'","'${TREE}'","'${HISTFILE}'","'${TreeNames[$i]}'","'${trackShower_sel}'","'${PreBCalCut}'","'${sigma_minus}'","'${sigma_plus}'","'${EMissCut}'",'${makeHists}')'
       fi
     done
