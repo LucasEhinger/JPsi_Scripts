@@ -18,9 +18,9 @@ double returnGreaterThetaVertex(double em_theta, double ep_theta, double vertex_
 }
 
 bool passEoverP(double p, double Efcal, double Ebcal, bool isFCAL, double sigma_minus, double sigma_plus) {
-  double fcal_mu = 1.06319717;
+  double fcal_mu    = 1.06319717;
   double fcal_sigma = 0.085128472;
-  double bcal_mu = 1.028670304;
+  double bcal_mu    = 1.028670304;
   double bcal_sigma = 0.072119971;
 
   if (isFCAL) {
@@ -328,10 +328,10 @@ void filterAll(string inFileName, string outFileName, string outHistName, string
                   .Define("Delta_kin_thrown", "(thrownBeam - thrownElectron - thrownPositron)")
                   .Define("t_kin_thrown", "Delta_kin_thrown.M2()")
                   .Define("delta_t_true", "(t_kin_true-t_kin)")
-                  .Define("delta_t_true_lc", "(t_kin_true+t_kin_minus)")
+                  .Define("delta_t_true_lc", "(t_kin_true-t_kin_lc)")
                   .Define("delta_t_true_thrown", "(t_kin_true-t_kin_thrown)")
                   .Define("delta_t_thrown", "(t_kin_thrown-t_kin)")
-                  .Define("delta_t_thrown_lc", "(t_kin_thrown+t_kin_minus)")
+                  .Define("delta_t_thrown_lc", "(t_kin_thrown-t_kin_lc)")
                   .Define("em_p_true", "em_p4_true.P()")
                   .Define("ep_p_true", "ep_p4_true.P()")
                   .Define("em_p_thrown", "thrownElectron.P()")
